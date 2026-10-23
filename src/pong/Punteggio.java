@@ -87,14 +87,14 @@ public class Punteggio {
                 return puntiLato2;
             }
         }
-        return 0;
+        return 0; // scrivete qui
     }
 
     /**
      * Promette: vero se la partita è finita, cioè se un lato ha vinto. Non cambia niente.
      */
     public boolean isFinita() {
-        return statoPartita;
+        return statoPartita; // scrivete qui
     }
 
     /**
