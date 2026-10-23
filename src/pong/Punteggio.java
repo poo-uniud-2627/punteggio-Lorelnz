@@ -20,6 +20,13 @@ import java.util.List;
 public class Punteggio {
 
     // scrivete qui i campi che vi servono
+    private int PUNTI_PER_VINCERE;
+    private int SCARTO_MINIMO;
+    private int puntiLato1;
+    private int puntiLato2;
+    private List<Lato> storia;
+    private Lato vincitore; 
+    private boolean statoPartita;
 
     /**
      * Una partita nuova, 0 a 0, con la sua regola per vincere.
@@ -28,6 +35,15 @@ public class Punteggio {
      */
     public Punteggio(int puntiPerVincere, int scartoMinimo) {
         // scrivete qui
+        if ( puntiPerVincere >= 1 && scartoMinimo >= 1  ) {
+            PUNTI_PER_VINCERE = puntiPerVincere;
+            SCARTO_MINIMO = scartoMinimo;
+            puntiLato1 = 0;
+            puntiLato2 = 0;
+            storia = new ArrayList<Lato>();
+            vincitore = null;
+            statoPartita = false;
+        } 
     }
 
     /**
@@ -39,7 +55,24 @@ public class Punteggio {
      *           Se la partita era già finita, non cambia niente.
      */
     public void segnaPunto(Lato chi) {
-        // scrivete qui
+        // scrivete qui{{
+        if ( chi != null && !isFinita() ) {
+            if ( chi == Lato.DESTRA ) {
+                puntiLato1 ++;
+                storia.add( chi );
+                if ( puntiLato1 >= PUNTI_PER_VINCERE && ( puntiLato1 - puntiLato2 ) >= SCARTO_MINIMO ) {
+                    vincitore = Lato.DESTRA;
+                    statoPartita = true;
+                }
+            } else {
+                puntiLato2++;
+                storia.add( chi );
+                if ( puntiLato2 >= PUNTI_PER_VINCERE && ( puntiLato2 - puntiLato1 ) >= SCARTO_MINIMO ) {
+                    vincitore = Lato.SINISTRA;
+                    statoPartita = true;
+                }
+            }
+        }
     }
 
     /**
@@ -47,21 +80,28 @@ public class Punteggio {
      * Promette: i punti del lato chi. Non cambia niente.
      */
     public int getPunti(Lato chi) {
-        return 0; // scrivete qui
+        if ( chi != null ) {
+            if ( chi == Lato.DESTRA ) {
+                return puntiLato1;
+            } else {
+                return puntiLato2;
+            }
+        }
+        return 0;
     }
 
     /**
      * Promette: vero se la partita è finita, cioè se un lato ha vinto. Non cambia niente.
      */
     public boolean isFinita() {
-        return false; // scrivete qui
+        return statoPartita;
     }
 
     /**
      * Promette: il lato che ha vinto; null se la partita non è finita. Non cambia niente.
      */
     public Lato getVincitore() {
-        return null; // scrivete qui
+        return vincitore; // scrivete qui
     }
 
     /**
@@ -74,6 +114,26 @@ public class Punteggio {
      */
     public void annullaUltimoPunto() {
         // scrivete qui
+        if ( storia.isEmpty() == false ) {
+            Lato latoPenalizzato = storia.get( storia.size() - 1);
+            if ( isFinita() ) {
+                vincitore = null;
+                statoPartita = false;
+                storia.remove( storia.size() - 1 );
+                if ( latoPenalizzato == Lato.DESTRA ) {
+                    puntiLato1--;
+                } else {
+                    puntiLato2--;
+                }
+            } else {
+                storia.remove( storia.size() - 1 );
+                if ( latoPenalizzato == Lato.DESTRA ) {
+                    puntiLato1--;
+                } else {
+                    puntiLato2--;
+                }
+            }
+        }
     }
 
     /**
@@ -87,7 +147,7 @@ public class Punteggio {
      *           segnati dopo; chi la usa non deve contare né sull'una né sull'altra cosa.
      */
     public List<Lato> getStoria() {
-        return new ArrayList<>(); // scrivete qui
+        return List.copyOf( storia ); // scrivete qui
     }
 
     /**
@@ -97,5 +157,10 @@ public class Punteggio {
      */
     public void azzera() {
         // scrivete qui
+        puntiLato1 = 0;
+        puntiLato2 = 0;
+        vincitore = null;
+        statoPartita = false;
+        storia = new ArrayList<Lato>(); 
     }
 }
